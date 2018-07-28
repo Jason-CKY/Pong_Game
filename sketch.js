@@ -8,7 +8,7 @@ const PADDLE_SPEED = 10;
 const BALL_DIAMETER = 15;
 const MAX_BALL_SPEED = 20;
 const INIT_BALL_SPEED = 5;
-const WIN_SCORE = 5;
+const WIN_SCORE = 1;
 
 //	keyCodes constants
 const SINGLE_PLAYER = 49;
@@ -17,6 +17,7 @@ const UP_ARROW = 38;
 const DOWN_ARROW = 40;
 const W_KEY = 87;
 const S_KEY = 83;
+const ESC = 27;
 
 class Ball{
 	constructor(x, y, diameter, vx, vy){
@@ -154,10 +155,6 @@ function draw() {
 		drawTitleScreen();
 	}
 	else{
-		//	test for win condition
-		if(isGameWon()){
-			drawWinScreen();
-		}
 		drawScore();
 		drawNet();
 		paddleLeft.display();
@@ -176,6 +173,10 @@ function draw() {
 		collisionDetection();
 		//	counting scores
 		countScoreAndResetBall();
+		//	test for win condition
+		if(isGameWon()){
+			drawWinScreen();
+		}
 	}
 }
 
@@ -205,6 +206,13 @@ function keyPressed(){
 		else if(keyCode == TWO_PLAYER){
 			gameHasStarted = true;
 			twoPlayer = true;
+		}
+	}
+	if(gameHasStarted){
+		if(keyCode == ESC){
+			gameHasStarted = false;
+			singlePlayer = false;
+			twoPlayer = false;
 		}
 	}
 }
@@ -293,7 +301,7 @@ function drawTitleScreen(){
 }
 
 function drawWinScreen(){
-	background(0);
+	//background(0);
 	fill(255);
 	textFont("Georgia");
 	textSize(70);
@@ -313,7 +321,7 @@ function drawWinScreen(){
 function drawNet(){
 	fill(255);
 	for(let i=0; i<CANVAS_HEIGHT; i+=50){
-		rect(CANVAS_WIDTH/2, i, 10, 40);
+		rect(CANVAS_WIDTH/2, i, 5, 40);
 	}
 }
 
