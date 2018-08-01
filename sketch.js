@@ -1,14 +1,12 @@
 /// <reference path="../p5.global-mode.d.ts" />
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 550;
 const PADDLE_HEIGHT = 150;
 const PADDLE_WIDTH = 10;
 const PADDLE_SPEED = 10;
 const BALL_DIAMETER = 15;
 const MAX_BALL_SPEED = 20;
-const INIT_BALL_SPEED = 5;
-const WIN_SCORE = 1;
+const INIT_BALL_SPEED = 7;
+const WIN_SCORE = 5;
 
 //	keyCodes constants
 const SINGLE_PLAYER = 49;
@@ -55,7 +53,7 @@ class Ball{
 	}
 	edgeReflection(){
 		//	bouncing the ball off the top and bottom edge
-		if(this.y <= this.diameter/2 || CANVAS_HEIGHT - this.y 	<= this.diameter/2){
+		if(this.y <= this.diameter/2 || height - this.y 	<= this.diameter/2){
 			this.vy*=-1;
 		}
 	}
@@ -64,14 +62,14 @@ class Ball{
 		this.vy *= -1;
 	}
 	hitLeftEdge(){
-		return dist(0, 0, this.x, 0) <= 0;
+		return this.x - 0 <= 0;
 	}
 	hitRightEdge(){
-		return dist(CANVAS_WIDTH, 0, this.x, 0) <= 0;
+		return windowWidth - this.x <= 0;
 	}
 	resetBall(){
-		this.x = CANVAS_WIDTH/2;
-		this.y = CANVAS_HEIGHT/2;
+		this.x = width/2;
+		this.y = height/2;
 		this.vx *= -1;
 		this.vy = INIT_BALL_SPEED;
 	}
@@ -117,8 +115,8 @@ class Paddle{
 		if(paddleCenterY <= 0 ){
 			this.y = -this.height/2;
 		}
-		else if(paddleCenterY >= CANVAS_HEIGHT){
-			this.y = CANVAS_HEIGHT - this.height/2;
+		else if(paddleCenterY >= height){
+			this.y = height - this.height/2;
 		}
 	}
 	chaseBall(ball){
@@ -141,11 +139,19 @@ let gameHasStarted = false;
 let singlePlayer = false;
 let twoPlayer = false;
 
+//	dom elements
+let singlePlayer_Button, twoPlayer_Button;
+
 function setup() {
-	createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-	ball = new Ball(CANVAS_WIDTH/2, CANVAS_HEIGHT/2, BALL_DIAMETER, INIT_BALL_SPEED, INIT_BALL_SPEED);
+	createCanvas(windowWidth, windowHeight);
+	singlePlayer_Button = createButton("Single player (or press \"1\")");
+	singlePlayer_Button.mousePressed(setSinglePlayer);
+	twoPlayer_Button = createButton("2 player mode (or press \"2\")");
+	twoPlayer_Button.mousePressed(setTwoPlayer);
+
+	ball = new Ball(width/2, height/2, BALL_DIAMETER, INIT_BALL_SPEED, INIT_BALL_SPEED);
 	paddleLeft = new Paddle(0, 0, PADDLE_WIDTH, PADDLE_HEIGHT);
-	paddleRight = new Paddle(CANVAS_WIDTH-10, 0, PADDLE_WIDTH, PADDLE_HEIGHT);
+	paddleRight = new Paddle(width-10, 0, PADDLE_WIDTH, PADDLE_HEIGHT);
 	paddleRight.setVY(PADDLE_SPEED);
 }
 
@@ -180,6 +186,28 @@ function draw() {
 	}
 }
 
+function showDOM(){
+	singlePlayer_Button.show();
+	twoPlayer_Button.show();
+}
+
+function hideDOM(){
+	singlePlayer_Button.hide();
+	twoPlayer_Button.hide();
+}
+
+//	button listeners
+function setSinglePlayer(){
+	gameHasStarted = true;
+	singlePlayer = true;
+	hideDOM();
+}
+
+function setTwoPlayer(){
+	gameHasStarted = true;
+	twoPlayer = true;
+	hideDOM();
+}
 //	event listeners
 function mouseMoved(){
 	if(!isGameWon() && singlePlayer){
@@ -202,10 +230,12 @@ function keyPressed(){
 		if(keyCode == SINGLE_PLAYER){
 			gameHasStarted = true;
 			singlePlayer = true;
+			hideDOM();
 		}
 		else if(keyCode == TWO_PLAYER){
 			gameHasStarted = true;
 			twoPlayer = true;
+			hideDOM();
 		}
 	}
 	if(gameHasStarted){
@@ -213,6 +243,7 @@ function keyPressed(){
 			gameHasStarted = false;
 			singlePlayer = false;
 			twoPlayer = false;
+			showDOM();
 		}
 	}
 }
@@ -260,6 +291,8 @@ function countScoreAndResetBall(){
 		score_Left ++;
 		ball.resetBall();
 	}
+	console.log(score_Left);
+	console.log(score_Right);
 }
 
 //	map the paddle movements to the arrow keys and WASD for 2 player
@@ -297,7 +330,12 @@ function drawTitleScreen(){
 	text("Pong Game", width/2, height/4);
 	textSize(15);
 	text("Created by Cheng Kuan Yong Jason", width/2, height/3);
-	text("Enter '1' for single player \nEnter '2' for 2-player", width/2, height/2);
+	//text("Enter '1' for single player \nEnter '2' for 2-player", width/2, height/2);	
+
+	singlePlayer_Button.position(width/2 - singlePlayer_Button.width/2, height/2);
+	twoPlayer_Button.position(width/2 - twoPlayer_Button.width/2, height/2 + singlePlayer_Button.height);
+
+	
 }
 
 function drawWinScreen(){
@@ -315,13 +353,13 @@ function drawWinScreen(){
 	}
 	text(message, width/2, height/2);
 	textSize(15);
-	text("\n\n\nClick to continue", width/2, height/2);
+	text("\n\n\nClick to restart", width/2, height/2);
 }
 
 function drawNet(){
 	fill(255);
-	for(let i=0; i<CANVAS_HEIGHT; i+=50){
-		rect(CANVAS_WIDTH/2, i, 5, 40);
+	for(let i=0; i<height; i+=50){
+		rect(width/2, i, 5, 40);
 	}
 }
 
