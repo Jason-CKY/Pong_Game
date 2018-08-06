@@ -1,13 +1,6 @@
 /// <reference path="../p5.global-mode.d.ts" />
 
-const PADDLE_HEIGHT = 150;
-const PADDLE_WIDTH = 10;
-const PADDLE_SPEED = 10;
-const BALL_DIAMETER = 15;
-const MAX_BALL_SPEED = 20;
-const INIT_BALL_SPEED = 7;
 const WIN_SCORE = 5;
-
 //	keyCodes constants
 const SINGLE_PLAYER = 49;
 const TWO_PLAYER = 50;
@@ -17,121 +10,6 @@ const W_KEY = 87;
 const S_KEY = 83;
 const ESC = 27;
 
-class Ball{
-	constructor(x, y, diameter, vx, vy){
-		this.x = x;
-		this.y = y;
-		this.diameter = diameter;
-		this.vx = vx;
-		this.vy = vy;
-	}
-
-	setVX(vx){this.vx = vx;}
-	setVY(vy){this.vy = vy;}
-	setSpeed(vx, vy){
-		this.vx = vx;
-		this.vy = vy;
-	}
-
-	setDiameter(diameter){this.diameter = diameter;}
-
-	getX(){return this.x;}
-	getY(){return this.y;}
-	getDiameter(){return this.diameter;}
-	getRadius(){return this.r;}
-	getVX(){return this.vx;}
-	getVY(){return this.vy;}
-
-	display(){
-		fill(255, 0, 0);
-		ellipse(this.x, this.y, this.diameter);
-	}
-	move(){
-		this.edgeReflection();
-		this.x += this.vx;
-		this.y += this.vy;
-	}
-	edgeReflection(){
-		//	bouncing the ball off the top and bottom edge
-		if(this.y <= this.diameter/2 || height - this.y 	<= this.diameter/2){
-			this.vy*=-1;
-		}
-	}
-	reflectBall(){
-		this.vx *= -1;
-		this.vy *= -1;
-	}
-	hitLeftEdge(){
-		return this.x - 0 <= 0;
-	}
-	hitRightEdge(){
-		return windowWidth - this.x <= 0;
-	}
-	resetBall(){
-		this.x = width/2;
-		this.y = height/2;
-		this.vx *= -1;
-		this.vy = INIT_BALL_SPEED;
-	}
-}
-
-class Paddle{
-	constructor(x, y, width, height, vy=0){
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.vy = vy;
-	}
-	getX(){return this.x;}
-	getY(){return this.y;}
-	getVY(){return this.vy;}
-	getWidth(){return this.width;}
-	getHeight(){return this.height;}
-	setX(x){this.x=x;}
-	setY(y){this.y=y;}
-	setVY(vy){this.vy=vy;}
-	setWidth(width){this.width=width;}
-	setHeight(height){this.height=height;}
-
-	display(){
-		fill(255);
-		rect(this.x, this.y, this.width, this.height);
-	}
-
-	followMouse(yMouse){
-		this.y = yMouse - this.height/2;
-	}
-
-	moveUp(speed){
-		this.y -= speed;
-	}
-	moveDown(speed){
-		this.y += speed;
-	}
-
-	bounded(){
-		let paddleCenterY = this.y + this.height/2;
-		if(paddleCenterY <= 0 ){
-			this.y = -this.height/2;
-		}
-		else if(paddleCenterY >= height){
-			this.y = height - this.height/2;
-		}
-	}
-	chaseBall(ball){
-		let paddleCenterY = this.y + this.height/2;
-		// adjust the allowance of error of computer paddle to be 20% of PADDLE_HEIGHT
-		let paddleAllowance = 0.2*PADDLE_HEIGHT;
-		// Make the center of the paddle chase the ball co-ordinates
-		if(paddleCenterY < ball.getY() - paddleAllowance){
-			this.y += this.vy;
-		}
-		else if(paddleCenterY > ball.getY() + paddleAllowance){
-			this.y -= this.vy;
-		}
-	}
-}
 
 let ball, paddleLeft, paddleRight;
 let score_Left = 0, score_Right = 0;
@@ -287,7 +165,7 @@ function countScoreAndResetBall(){
 		score_Right ++;
 		ball.resetBall();
 	}
-	else if(ball.hitRightEdge()){
+	else if(ball.hitRightEdge(windowWidth)){
 		score_Left ++;
 		ball.resetBall();
 	}
@@ -309,8 +187,8 @@ function twoPlayerMode(){
 	if(keyIsDown(DOWN_ARROW)){
 		paddleRight.moveDown(PADDLE_SPEED);
 	}
-	paddleLeft.bounded();
-	paddleRight.bounded();
+	paddleLeft.bounded(height);
+	paddleRight.bounded(height);
 }
 
 //	drawing graphics
