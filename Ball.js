@@ -1,5 +1,5 @@
-const INIT_BALL_SPEED = 7;
-const BALL_DIAMETER = 15;
+const INIT_BALL_SPEED = 5;
+const BALL_DIAMETER = 25;
 const MAX_BALL_SPEED = 20;
 class Ball{
 	constructor(x, y, diameter, vx, vy){
@@ -27,7 +27,7 @@ class Ball{
 	getVY(){return this.vy;}
 
 	display(){
-		fill(255, 0, 0);
+		fill(255, 255, 255);
 		ellipse(this.x, this.y, this.diameter);
 	}
 	move(){
